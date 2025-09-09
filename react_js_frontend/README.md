@@ -24,24 +24,20 @@ A modern, minimalistic React web app for a Q&A agent. It provides:
 - `src/App.js` - Main UI and behavior
 - `src/App.css` - Styles using CSS variables with the provided palette
 - `src/index.js` - Entry point
+- `src/apiClient.js` - API client for calling the backend proxy
 
-## Replace Mock Answer
-The app currently simulates answers. To connect a real backend:
-1. Replace `getAutomatedAnswer` in `src/App.js` with a `fetch` call to your API endpoint.
-2. Preserve loading and error state handling.
-3. Consider reading API URL from env variables (e.g. `REACT_APP_API_URL`) set in `.env`.
-
-Example:
-```js
-const res = await fetch(`${process.env.REACT_APP_API_URL}/answer`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ question: trimmed })
-});
-if (!res.ok) throw new Error('Failed to get answer');
-const data = await res.json();
-setAnswer(data.answer);
+## Environment
+Create a `.env` based on `.env.example`:
 ```
+REACT_APP_API_URL=https://your-backend.example.com
+```
+Do NOT place any OpenAI API keys in the frontend. The frontend calls a backend proxy at `${REACT_APP_API_URL}/answer`, which securely uses the OpenAI key on the server.
+
+## Backend contract
+POST `${REACT_APP_API_URL}/answer`
+- Body: `{ "question": "<user question>" }`
+- Response: `{ "answer": "<answer text>" }`
+- On error: return a non-2xx status with `{ "error": "message" }`
 
 ## Accessibility
 - Inputs and dynamic regions are annotated with `aria-*` attributes.

@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
+import { postAnswer } from './apiClient';
 
 /**
  * PUBLIC_INTERFACE
@@ -24,28 +25,6 @@ function App() {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
-  /**
-   * Simulate an async "answer" generation
-   * Replace this with a real API call when backend is available.
-   */
-  const getAutomatedAnswer = useCallback(async (q) => {
-    // Simulated latency
-    await new Promise((res) => setTimeout(res, 900));
-    // Simple placeholder logic
-    if (!q || q.trim().length === 0) {
-      // This is guarded earlier, but keep a fallback
-      throw new Error('Please enter a question.');
-    }
-    // Naive "answer" generator
-    const templates = [
-      `Here’s a concise explanation for: "${q}". This system currently uses a mock responder. Replace with a real API to get accurate answers.`,
-      `Answer for "${q}": This is a placeholder response. Integrate with your backend to retrieve real answers.`,
-      `You asked: "${q}". A detailed response will appear here once connected to your answer service.`,
-    ];
-    const idx = Math.floor(Math.random() * templates.length);
-    return templates[idx];
-  }, []);
-
   // PUBLIC_INTERFACE
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -58,7 +37,8 @@ function App() {
     }
     setLoading(true);
     try {
-      const res = await getAutomatedAnswer(trimmed);
+      // Call the backend proxy that integrates with OpenAI using server-side API key
+      const res = await postAnswer(trimmed);
       setAnswer(res);
     } catch (err) {
       setError(err?.message || 'Something went wrong while fetching the answer.');
