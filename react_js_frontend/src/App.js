@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { postAnswer } from './apiClient';
+import { postAnswer, checkBackend } from './apiClient';
 
 /**
  * PUBLIC_INTERFACE
@@ -19,11 +19,34 @@ function App() {
   const [answer, setAnswer] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [backendStatus, setBackendStatus] = useState({ checked: false, ok: false, message: '', baseUrl: '' });
 
   // Apply theme to document root (kept for extensibility; theme is 'light')
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const res = await checkBackend();
+      if (cancelled) return;
+      if (res.ok) {
+        setBackendStatus({ checked: true, ok: true, message: '', baseUrl: res.baseUrl });
+      } else {
+        const msg = res.error
+          ? res.error
+          : `Backend probe failed${res.status ? ` (status ${res.status})` : ''}.`;
+        setBackendStatus({
+          checked: true,
+          ok: false,
+          message: `${msg} Using base URL: ${res.baseUrl}. Ensure REACT_APP_API_URL is set to your backend and that it implements POST /answer.`,
+          baseUrl: res.baseUrl,
+        });
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   // PUBLIC_INTERFACE
   const handleSubmit = async (e) => {
@@ -67,6 +90,22 @@ function App() {
 
       <main className="app-main" role="main">
         <section className="qa-card" aria-label="Question and Answer">
+          {backendStatus.checked && !backendStatus.ok && (
+            <div
+              role="alert"
+              style={{
+                marginBottom: 12,
+                padding: '10px 12px',
+                borderRadius: 10,
+                border: '1px solid #ffe2b8',
+                background: '#fff8e6',
+                color: '#8a5300',
+                fontSize: 13
+              }}
+            >
+              <strong>Configuration issue:</strong> {backendStatus.message}
+            </div>
+          )}
           <form className="qa-form" onSubmit={handleSubmit} aria-label="Ask a question">
             <label htmlFor="question-input" className="visually-hidden">
               Enter your question
