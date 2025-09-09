@@ -1,82 +1,48 @@
-# Lightweight React Template for KAVIA
+# Q&A Assistant - React Frontend
 
-This project provides a minimal React template with a clean, modern UI and minimal dependencies.
+A modern, minimalistic React web app for a Q&A agent. It provides:
+- A header bar with the app title
+- A central question input form
+- A result display area with loading and error states
+- Responsive layout
 
-## Features
+## Tech
+- React 18
+- Vanilla CSS, no heavy UI frameworks
 
-- **Lightweight**: No heavy UI frameworks - uses only vanilla CSS and React
-- **Modern UI**: Clean, responsive design with KAVIA brand styling
-- **Fast**: Minimal dependencies for quick loading times
-- **Simple**: Easy to understand and modify
+## Color Palette
+- Primary: `#1976d2`
+- Accent: `#ff9800`
+- Secondary: `#424242`
 
-## Getting Started
+## Available Scripts
+- `npm start` - Start dev server
+- `npm test` - Run tests
+- `npm run build` - Production build
 
-In the project directory, you can run:
+## Structure
+- `src/App.js` - Main UI and behavior
+- `src/App.css` - Styles using CSS variables with the provided palette
+- `src/index.js` - Entry point
 
-### `npm start`
+## Replace Mock Answer
+The app currently simulates answers. To connect a real backend:
+1. Replace `getAutomatedAnswer` in `src/App.js` with a `fetch` call to your API endpoint.
+2. Preserve loading and error state handling.
+3. Consider reading API URL from env variables (e.g. `REACT_APP_API_URL`) set in `.env`.
 
-Runs the app in development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-### `npm test`
-
-Launches the test runner in interactive watch mode.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-## Customization
-
-### Colors
-
-The main brand colors are defined as CSS variables in `src/App.css`:
-
-```css
-:root {
-  --kavia-orange: #E87A41;
-  --kavia-dark: #1A1A1A;
-  --text-color: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --border-color: rgba(255, 255, 255, 0.1);
-}
+Example:
+```js
+const res = await fetch(`${process.env.REACT_APP_API_URL}/answer`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ question: trimmed })
+});
+if (!res.ok) throw new Error('Failed to get answer');
+const data = await res.json();
+setAnswer(data.answer);
 ```
 
-### Components
-
-This template uses pure HTML/CSS components instead of a UI framework. You can find component styles in `src/App.css`. 
-
-Common components include:
-- Buttons (`.btn`, `.btn-large`)
-- Container (`.container`)
-- Navigation (`.navbar`)
-- Typography (`.title`, `.subtitle`, `.description`)
-
-## Learn More
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Accessibility
+- Inputs and dynamic regions are annotated with `aria-*` attributes.
+- Live region is used for announcements of results and errors.
